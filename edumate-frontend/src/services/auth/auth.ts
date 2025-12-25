@@ -11,6 +11,35 @@ import { CreateUserDetails, UserRegisterDetails } from '../user/types';
 // Get API base URL from configuration
 const API_URL = config.apiUrl;
 
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
+function base64EncodeJson(value: any): string {
+  const json = JSON.stringify(value);
+  // Ensure we only pass Latin1 to btoa.
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+function createDemoJwt(payload: Record<string, any>): string {
+  // NOTE: This is NOT a real signed JWT. It only exists to satisfy the
+  // client-side token parser in demo mode.
+  const header = { alg: 'none', typ: 'JWT' };
+  return `${base64EncodeJson(header)}.${base64EncodeJson(payload)}.demo`;
+}
+
+if (isDemoMode) {
+  const existing = localStorage.getItem('token');
+  if (!existing) {
+    localStorage.setItem(
+      'token',
+      createDemoJwt({
+        userId: 1,
+        role: 'student',
+        email: 'demo.student@edumate.local'
+      })
+    );
+  }
+}
+
 /**
  * Login function that authenticates a user with the backend
  */

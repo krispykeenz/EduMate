@@ -19,16 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: edumate-frontend
+        run: npm ci
+
+      - name: Build frontend (demo mode)
+        working-directory: edumate-frontend
+        env:
+          VITE_DEMO_MODE: 'true'
+        run: npm run build
+
       - name: Prepare static site
         run: |
-          rm -rf _site
-          mkdir -p _site
-          cp -R demo/* _site/
-          touch _site/.nojekyll
+          touch edumate-frontend/dist/.nojekyll
 
       - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: ./edumate-frontend/dist
           publish_branch: gh-pages

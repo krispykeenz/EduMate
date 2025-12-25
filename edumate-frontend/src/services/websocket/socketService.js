@@ -2,6 +2,8 @@ import { io } from 'socket.io-client';
 import config from '../../config/Config';
 import authService from '../auth/auth';
 
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
 class SocketService {
   constructor() {
     this.socket = null;
@@ -17,6 +19,24 @@ class SocketService {
   }
 
   connect() {
+    // Demo mode: simulate a connected socket so the messaging UI works on GitHub Pages.
+    if (isDemoMode) {
+      this.isConnected = true;
+      this.reconnectAttempts = 0;
+      this.socket = { connected: true, id: 'demo' };
+
+      // Notify listeners
+      this.connectionListeners.forEach(listener => {
+        try {
+          listener({ connected: true, socketId: 'demo' });
+        } catch (error) {
+          console.error('SocketService: Connection listener error:', error);
+        }
+      });
+
+      return Promise.resolve();
+    }
+
     if (this.socket?.connected) {
       console.log('SocketService: Already connected, skipping');
       return Promise.resolve();
@@ -164,6 +184,12 @@ class SocketService {
   }
 
   disconnect() {
+    if (isDemoMode) {
+      this.socket = null;
+      this.isConnected = false;
+      return;
+    }
+
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
@@ -173,6 +199,18 @@ class SocketService {
 
   // Send a message
   sendMessage(messageData) {
+    if (isDemoMode) {
+      const timestamp = new Date().toISOString();
+      return Promise.resolve({
+        id: Date.now(),
+        recipientId: messageData.recipientId,
+        content: messageData.content,
+        messageType: messageData.messageType || 'text',
+        attachments: messageData.attachments || [],
+        timestamp
+      });
+    }
+
     if (!this.socket?.connected) {
       throw new Error('Socket not connected');
     }
@@ -190,6 +228,10 @@ class SocketService {
 
   // Join a chat room (conversation between user and tutor)
   joinChatRoom(roomId) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       throw new Error('Socket not connected');
     }
@@ -199,6 +241,10 @@ class SocketService {
 
   // Leave a chat room
   leaveChatRoom(roomId) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -208,6 +254,10 @@ class SocketService {
 
   // Send typing indicator
   sendTyping(roomId, isTyping = true) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -217,6 +267,10 @@ class SocketService {
 
   // Mark messages as read
   markMessagesAsRead(messageIds) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -228,6 +282,18 @@ class SocketService {
   
   // Send a group message
   sendGroupMessage(messageData) {
+    if (isDemoMode) {
+      const timestamp = new Date().toISOString();
+      return Promise.resolve({
+        id: Date.now(),
+        conversationId: messageData.conversationId,
+        content: messageData.content,
+        messageType: messageData.messageType || 'text',
+        attachments: messageData.attachments || [],
+        timestamp
+      });
+    }
+
     if (!this.socket?.connected) {
       throw new Error('Socket not connected');
     }
@@ -245,6 +311,10 @@ class SocketService {
 
   // Join a group chat room
   joinGroupChatRoom(conversationId) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       throw new Error('Socket not connected');
     }
@@ -254,6 +324,10 @@ class SocketService {
 
   // Leave a group chat room
   leaveGroupChatRoom(conversationId) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -263,6 +337,10 @@ class SocketService {
 
   // Send group typing indicator
   sendGroupTyping(conversationId, isTyping = true) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -272,6 +350,10 @@ class SocketService {
 
   // Mark group messages as read
   markGroupMessagesAsRead(conversationId, messageIds) {
+    if (isDemoMode) {
+      return;
+    }
+
     if (!this.socket?.connected) {
       return;
     }
@@ -368,7 +450,7 @@ class SocketService {
 
   // Get connection status
   isSocketConnected() {
-    return this.socket?.connected || false;
+    return isDemoMode ? this.isConnected : (this.socket?.connected || false);
   }
 
   // Get socket ID
@@ -406,7 +488,7 @@ class SocketService {
 const socketService = new SocketService();
 
 // Auto-connect when user is authenticated
-if (authService.isAuthenticated()) {
+if (!isDemoMode && authService.isAuthenticated()) {
   socketService.connect().catch(error => {
     console.error('SocketService: Auto-connection failed:', error);
   });
