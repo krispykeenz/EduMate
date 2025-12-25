@@ -14,6 +14,20 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // If already authenticated (e.g. demo mode auto-login), skip the login screen.
+    if (!authService.isAuthenticated()) return;
+
+    const userRole = authService.getUserRole();
+    if (userRole === 'admin') {
+      navigate('/admin', { replace: true });
+    } else if (userRole === 'tutor') {
+      navigate('/tutor', { replace: true });
+    } else if (userRole === 'student') {
+      navigate('/student', { replace: true });
+    }
+  }, [navigate]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +56,7 @@ export default function Login() {
       } else {
         alert("Invalid credentials");
       }
-    } catch (error) {
+    } catch {
       alert("Service unavailable. Please try again later.");
     }
   };

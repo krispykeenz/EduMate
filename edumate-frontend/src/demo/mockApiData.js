@@ -13,11 +13,119 @@ function daysAgo(days) {
 
 export const demoUser = {
   id: 1,
-  name: 'Keenan Burriss',
-  email: 'demo.student@edumate.local',
-  role: 'student',
-  studentId: 'STU-0001'
+  name: 'Demo Admin',
+  email: 'admin@edumate.com',
+  role: 'admin',
+  adminId: 'ADM-0001',
+  createdAt: daysAgo(120),
+  isActive: true
 }
+
+// Admin demo fixtures
+export const demoAdminUsers = [
+  demoUser,
+  {
+    id: 2,
+    name: 'Jordan Lee',
+    email: 'jordan.lee@edumate.com',
+    role: 'student',
+    studentId: 'STU-0002',
+    createdAt: daysAgo(60),
+    isActive: true
+  },
+  {
+    id: 3,
+    name: 'Samira Khan',
+    email: 'samira.khan@edumate.com',
+    role: 'student',
+    studentId: 'STU-0003',
+    createdAt: daysAgo(25),
+    isActive: true
+  },
+  {
+    id: 42,
+    name: 'Ava Naidoo',
+    email: 'ava.naidoo@edumate.com',
+    role: 'tutor',
+    tutorId: 'TUT-0042',
+    createdAt: daysAgo(90),
+    isActive: true,
+    rating: 4.8,
+    subjects: ['Programming', 'Algorithms'],
+    campusLocation: 'Engineering Building',
+    warningsCount: 0,
+    tutorModules: [
+      { module: { code: 'CSC101', name: 'Intro to Programming' } },
+      { module: { code: 'CSC201', name: 'Data Structures' } }
+    ]
+  },
+  {
+    id: 43,
+    name: 'Sipho Dlamini',
+    email: 'sipho.dlamini@edumate.com',
+    role: 'tutor',
+    tutorId: 'TUT-0043',
+    createdAt: daysAgo(75),
+    isActive: true,
+    rating: 4.5,
+    subjects: ['Discrete Math', 'Linear Algebra'],
+    campusLocation: 'Science Building',
+    warningsCount: 1,
+    tutorModules: [
+      { module: { code: 'MAT201', name: 'Discrete Mathematics' } },
+      { module: { code: 'MAT202', name: 'Linear Algebra' } }
+    ]
+  }
+]
+
+export const demoTutorRequests = [
+  {
+    id: 9001,
+    tutor: { name: 'Lerato Molefe', email: 'lerato.molefe@edumate.com' },
+    createdAt: daysAgo(3)
+  },
+  {
+    id: 9002,
+    tutor: { name: 'Michael Chen', email: 'michael.chen@edumate.com' },
+    createdAt: daysAgo(1)
+  }
+]
+
+export const demoAdminSessions = [
+  {
+    id: 501,
+    title: 'CSC101 Loops Workshop',
+    subject: 'Intro to Programming (CSC101)',
+    tutorName: 'Ava Naidoo',
+    scheduledAt: hoursFromNow(6),
+    location: 'Online (Demo)',
+    participants: Array.from({ length: 8 }).map((_, i) => ({ name: `Student ${i + 1}` })),
+    status: 'scheduled',
+    description: 'Hands-on practice with for/while loops, plus a mini quiz.'
+  },
+  {
+    id: 502,
+    title: 'MAT201 Discrete Math Review',
+    subject: 'Discrete Mathematics (MAT201)',
+    tutorName: 'Sipho Dlamini',
+    scheduledAt: hoursFromNow(-2),
+    location: 'Library Room B (Demo)',
+    participants: Array.from({ length: 12 }).map((_, i) => ({ name: `Student ${i + 1}` })),
+    status: 'active',
+    description: 'Sets, relations, and proof techniques (demo session).'
+  },
+  {
+    id: 503,
+    title: 'CSC201 Big-O Clinic',
+    subject: 'Data Structures (CSC201)',
+    tutorName: 'Ava Naidoo',
+    scheduledAt: hoursFromNow(-40),
+    location: 'Online (Demo)',
+    participants: Array.from({ length: 15 }).map((_, i) => ({ name: `Student ${i + 1}` })),
+    status: 'completed',
+    description: 'Complexity analysis and practical examples.'
+  }
+]
 
 export const demoDashboardStats = {
   activeTutors: 3,

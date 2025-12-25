@@ -8,12 +8,16 @@ import axiosInstance from '../config/axios'
 
 import {
   demoActivities,
+  demoAdminSessions,
+  demoAdminUsers,
   demoConversations,
   demoDashboardStats,
   demoGroupChats,
   demoGroupMessagesByConversation,
   demoMessagesByConversation,
   demoTutorProgress,
+  demoTutorRequests,
+  demoUpcomingSessions,
   demoUploadsResponse,
   demoUser
 } from './mockApiData'
@@ -66,6 +70,55 @@ function matchDemoRoute(config) {
   // User
   if (method === 'GET' && path.endsWith('/user')) {
     return { status: 200, data: demoUser }
+  }
+
+  // Admin: users & tutor requests
+  if (method === 'GET' && path.endsWith('/admin/users')) {
+    return { status: 200, data: demoAdminUsers }
+  }
+  if (method === 'GET' && path.endsWith('/admin/tutor-requests')) {
+    return { status: 200, data: demoTutorRequests }
+  }
+
+  const approveTutorMatch = path.match(/\/admin\/tutor-requests\/(\d+)\/approve$/)
+  if (method === 'POST' && approveTutorMatch) {
+    return { status: 200, data: { success: true } }
+  }
+
+  const rejectTutorMatch = path.match(/\/admin\/tutor-requests\/(\d+)\/reject$/)
+  if (method === 'POST' && rejectTutorMatch) {
+    return { status: 200, data: { success: true } }
+  }
+
+  const deactivateUserMatch = path.match(/\/admin\/users\/(\d+)\/deactivate$/)
+  if (method === 'PUT' && deactivateUserMatch) {
+    return { status: 200, data: { success: true } }
+  }
+
+  const reactivateUserMatch = path.match(/\/admin\/users\/(\d+)\/reactivate$/)
+  if (method === 'PUT' && reactivateUserMatch) {
+    return { status: 200, data: { success: true } }
+  }
+
+  // Admin: sessions
+  if (method === 'GET' && path.endsWith('/admin/sessions')) {
+    return { status: 200, data: demoAdminSessions }
+  }
+
+  const adminSessionMatch = path.match(/\/admin\/sessions\/(\d+)$/)
+  if (adminSessionMatch) {
+    const sessionId = Number(adminSessionMatch[1])
+    const session = demoAdminSessions.find(s => s.id === sessionId) || null
+
+    if (method === 'GET') {
+      return { status: session ? 200 : 404, data: session || { success: false, error: 'Session not found' } }
+    }
+    if (method === 'PUT') {
+      return { status: 200, data: { success: true } }
+    }
+    if (method === 'DELETE') {
+      return { status: 200, data: { success: true } }
+    }
   }
 
   // Dashboard

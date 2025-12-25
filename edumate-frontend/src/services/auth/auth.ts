@@ -13,6 +13,10 @@ const API_URL = config.apiUrl;
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
 
+// Demo admin credentials (demo mode only)
+const DEMO_ADMIN_EMAIL = 'admin@edumate.com';
+const DEMO_ADMIN_PASSWORD = 'AdminPass123!';
+
 function base64EncodeJson(value: any): string {
   const json = JSON.stringify(value);
   // Ensure we only pass Latin1 to btoa.
@@ -26,18 +30,28 @@ function createDemoJwt(payload: Record<string, any>): string {
   return `${base64EncodeJson(header)}.${base64EncodeJson(payload)}.demo`;
 }
 
-if (isDemoMode) {
+function ensureDemoAdminToken() {
+  const desiredToken = createDemoJwt({
+    userId: 1,
+    role: 'admin',
+    email: DEMO_ADMIN_EMAIL
+  });
+
   const existing = localStorage.getItem('token');
   if (!existing) {
-    localStorage.setItem(
-      'token',
-      createDemoJwt({
-        userId: 1,
-        role: 'student',
-        email: 'demo.student@edumate.local'
-      })
-    );
+    localStorage.setItem('token', desiredToken);
+    return;
   }
+
+  const decoded = decodeToken(existing);
+  if (!decoded || decoded.role !== 'admin') {
+    // Replace any stale/invalid token (e.g. previously-seeded student token)
+    localStorage.setItem('token', desiredToken);
+  }
+}
+
+if (isDemoMode) {
+  ensureDemoAdminToken();
 }
 
 /**
@@ -45,6 +59,33 @@ if (isDemoMode) {
  */
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
+    // In demo mode, bypass the backend and validate against the demo credentials.
+    if (isDemoMode) {
+      const email = (credentials?.email || '').trim().toLowerCase();
+      const password = credentials?.password || '';
+
+      if (email === DEMO_ADMIN_EMAIL.toLowerCase() && password === DEMO_ADMIN_PASSWORD) {
+        const token = createDemoJwt({
+          userId: 1,
+          role: 'admin',
+          email: DEMO_ADMIN_EMAIL
+        });
+
+        localStorage.setItem('token', token);
+        setAuthHeader(token);
+
+        return {
+          success: true,
+          token
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Invalid credentials'
+      };
+    }
+
     const response = await axios.post<any>(`${API_URL}/auth/login`, credentials);
     
     // If login is successful, store only the JWT token in localStorage 

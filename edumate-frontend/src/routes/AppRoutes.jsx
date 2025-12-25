@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ForgotPassword from "../pages/ForgotPassword";
@@ -27,11 +27,13 @@ import TutorSessions from "../pages/TutorSessions";
 import TutorMessages from "../pages/TutorMessages";
 import Messages from "../pages/Messages";
 
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true';
+
 export default function AppRoutes() {
   return (
     <Routes>
       {/* Auth pages */}
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={isDemoMode ? <Navigate to="/admin" replace /> : <HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
