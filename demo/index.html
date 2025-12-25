@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduMate — Demo Mode</title>
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-row">
+        <div>
+          <div class="kicker">DEMO MODE (static showcase)</div>
+          <h1>EduMate</h1>
+          <p class="subtitle">Peer-to-peer tutoring demo with mocked tutors and session requests.</p>
+        </div>
+        <div class="header-actions">
+          <a class="btn" href="https://github.com/krispykeenz/EduMate" target="_blank" rel="noopener">View fork</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <div class="row">
+          <div>
+            <h2 class="m0">Find a tutor (demo)</h2>
+            <p class="muted">Search and request sessions — everything is static and runs in-browser.</p>
+          </div>
+          <label class="field">
+            <span class="label">Search subject</span>
+            <input id="search" type="search" placeholder="e.g. Calculus, Java, Accounting" />
+          </label>
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: 1.2fr 0.8fr; margin-top: 1rem;">
+          <div class="card" style="box-shadow:none;">
+            <h2>Available tutors</h2>
+            <div id="tutorGrid" class="product-grid" style="grid-template-columns: 1fr;">
+              <!-- injected -->
+            </div>
+          </div>
+
+          <aside class="card" style="box-shadow:none;">
+            <div class="row">
+              <h2 class="m0">Session requests</h2>
+              <div class="pill" id="reqCount">0</div>
+            </div>
+            <p class="muted small">Requests are stored only for this page session.</p>
+            <div id="reqList" class="cart-list" style="margin-top:.75rem;"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top: 1rem;">
+        <h2>Demo notes</h2>
+        <ul class="bullets">
+          <li>This is a demo-mode static site intended for portfolio embedding.</li>
+          <li>The real project includes a full frontend/backend workflow. Demo avoids all secrets/services.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <span class="muted">EduMate — Demo Mode</span>
+        <span class="muted">Static portfolio build</span>
+      </div>
+    </footer>
+
+    <!-- DEMO MODE ONLY: safe, static showcase. Remove the /demo folder when publishing a real deployment. -->
+    <script src="./app.js"></script>
+  </body>
+</html>
